@@ -30,6 +30,12 @@ body {
 	min-height: 100vh;
 }
 
+img {
+  border: 1px solid gray;
+  height: 200px;
+  width: 200px;
+}
+
 /* ---------- Floating hearts backdrop ---------- */
 #heart-field {
 	position: fixed;
