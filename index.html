@@ -1,400 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>A Question For You</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Dancing+Script:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg-a: #fff3f6;
-    --bg-b: #fde3ea;
-    --rose: #d1476f;
-    --rose-dark: #a6355a;
-    --rose-soft: #f3b8c8;
-    --plum: #4a1a3d;
-    --gold: #e3a94e;
-    --cream: #fffaf6;
-    --shadow: rgba(166, 53, 90, 0.25);
-  }
-
-  * { box-sizing: border-box; }
-
-  html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    overflow: hidden;
-  }
-
-  body {
-    font-family: 'Poppins', sans-serif;
-    background: radial-gradient(ellipse at top, var(--bg-b), var(--bg-a) 60%);
-    color: var(--plum);
-    position: relative;
-    min-height: 100vh;
-  }
-
-  /* ---------- Floating hearts backdrop ---------- */
-  #heart-field {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    overflow: hidden;
-    z-index: 1;
-  }
-
-  .floating-heart {
-    position: absolute;
-    bottom: -10%;
-    color: var(--rose-soft);
-    opacity: 0.55;
-    animation-name: rise;
-    animation-timing-function: ease-in;
-    animation-iteration-count: infinite;
-    filter: drop-shadow(0 0 6px rgba(209, 71, 111, 0.15));
-  }
-
-  @keyframes rise {
-    0%   { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
-    10%  { opacity: 0.6; }
-    90%  { opacity: 0.35; }
-    100% { transform: translateY(-115vh) translateX(var(--drift, 20px)) rotate(25deg); opacity: 0; }
-  }
-
-  /* ---------- Layout / pages ---------- */
-  .stage {
-    position: relative;
-    z-index: 2;
-    height: 100vh;
-    width: 100vw;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-  }
-
-  .page {
-    position: absolute;
-    inset: 0;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 32px;
-  }
-
-  .page.active {
-    display: flex;
-    animation: fadeSlideIn 0.75s ease forwards;
-  }
-
-  @keyframes fadeSlideIn {
-    from { opacity: 0; transform: translateY(18px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  .card {
-    max-width: 560px;
-    width: 100%;
-  }
-
-  .eyebrow {
-    font-family: 'Dancing Script', cursive;
-    font-size: 1.6rem;
-    color: var(--rose);
-    margin: 0 0 6px;
-    letter-spacing: 0.5px;
-  }
-
-  h1 {
-    font-family: 'Playfair Display', serif;
-    font-weight: 600;
-    font-size: clamp(1.9rem, 5vw, 3.1rem);
-    line-height: 1.25;
-    margin: 0 0 18px;
-    color: var(--plum);
-  }
-
-  .heart-mark {
-    font-size: clamp(2.4rem, 6vw, 3.4rem);
-    display: inline-block;
-    margin-bottom: 18px;
-    animation: pulse 1.8s ease-in-out infinite;
-    filter: drop-shadow(0 6px 14px var(--shadow));
-  }
-
-  @keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.12); }
-  }
-
-  p.sub {
-    font-size: 1rem;
-    color: #8a5468;
-    font-weight: 300;
-    margin: 0 auto 34px;
-    max-width: 420px;
-    line-height: 1.6;
-  }
-
-  /* ---------- Buttons ---------- */
-  .btn {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-    font-size: 1rem;
-    letter-spacing: 0.2px;
-    border: none;
-    border-radius: 999px;
-    padding: 15px 38px;
-    cursor: pointer;
-    transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
-  }
-
-  .btn-primary {
-    background: linear-gradient(135deg, var(--rose), var(--rose-dark));
-    color: var(--cream);
-    box-shadow: 0 10px 26px var(--shadow);
-  }
-
-  .btn-primary:hover {
-    transform: translateY(-2px) scale(1.03);
-    box-shadow: 0 14px 30px var(--shadow);
-  }
-
-  .btn-primary:active { transform: translateY(0) scale(0.98); }
-
-  .btn-ghost {
-    background: transparent;
-    color: var(--rose-dark);
-    border: 1.5px solid var(--rose-soft);
-  }
-
-  .btn-ghost:hover {
-    background: var(--rose-soft);
-    color: var(--plum);
-  }
-
-  /* ---------- Page 2 specific ---------- */
-  #choice-row {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 22px;
-    min-height: 160px;
-    flex-wrap: wrap;
-  }
-
-  #yesBtn {
-    transition: transform 0.35s cubic-bezier(.34,1.56,.64,1), box-shadow 0.35s ease;
-    z-index: 3;
-    white-space: nowrap;
-  }
-
-  #noBtn {
-    transition: transform 0.25s ease, opacity 0.25s ease, left 0.35s ease, top 0.35s ease;
-    position: relative;
-  }
-
-  #nudge {
-    min-height: 1.4em;
-    font-family: 'Dancing Script', cursive;
-    font-size: 1.3rem;
-    color: var(--rose);
-    margin-top: 22px;
-  }
-
-  /* ---------- Celebration page ---------- */
-  #burst-field {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 5;
-    overflow: hidden;
-  }
-
-  .burst-heart {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    font-size: 1.6rem;
-    animation: burst-move 1.4s ease-out forwards;
-  }
-
-  @keyframes burst-move {
-    to {
-      transform: translate(var(--bx), var(--by)) rotate(var(--br)) scale(0.4);
-      opacity: 0;
-    }
-  }
-
-  .signature {
-    font-family: 'Dancing Script', cursive;
-    color: var(--gold);
-    font-size: 1.4rem;
-    margin-top: 26px;
-  }
-
-  @media (max-width: 480px) {
-    #choice-row { gap: 14px; }
-    .btn { padding: 13px 28px; font-size: 0.95rem; }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .floating-heart, .heart-mark, .page.active, .burst-heart { animation: none !important; }
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A Question For You</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Dancing+Script:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
 </head>
+
 <body>
 
-<div id="heart-field"></div>
+  <div id="heart-field"></div>
 
-<div class="stage">
+  <div class="stage">
 
-  <!-- PAGE 1 -->
-  <section class="page active" id="page1">
-    <div class="card">
-      <div class="heart-mark">💌</div>
-      <p class="eyebrow">just a moment of your time</p>
-      <h1>I wanted to ask you something...</h1>
-      <p class="sub">Nothing big. Just something I've been thinking about for a while now.</p>
-      <button class="btn btn-primary" onclick="goToPage2()">Okay, ask me</button>
-    </div>
-  </section>
-
-  <!-- PAGE 2 -->
-  <section class="page" id="page2">
-    <div class="card">
-      <div class="heart-mark">💗</div>
-      <h1>Will you be my girlfriend?</h1>
-      <p class="sub" id="page2sub">Take your time. I'll wait right here.</p>
-
-      <div id="choice-row">
-        <button class="btn btn-primary" id="yesBtn" onclick="sayYes()">Yes</button>
-        <button class="btn btn-ghost" id="noBtn" onclick="sayNo()">No</button>
+    <!-- PAGE 1 -->
+    <section class="page active" id="page1">
+      <div class="card">
+        <div class="heart-mark">💌</div>
+        <p class="eyebrow">just a moment of your time</p>
+        <h1>I wanted to ask you something...</h1>
+        <p class="sub">Nothing big. Just something I've been thinking about for a while now.</p>
+        <button class="btn btn-primary" onclick="goToPage2()">Okay, ask me</button>
       </div>
+    </section>
 
-      <div id="nudge"></div>
-    </div>
-  </section>
+    <!-- PAGE 2 -->
+    <section class="page" id="page2">
+      <div class="card">
+        <div class="heart-mark">💗</div>
+        <h1>Will you be my girlfriend?</h1>
+        <p class="sub" id="page2sub">Take your time. I'll wait right here.</p>
 
-  <!-- PAGE 3 : CELEBRATION -->
-  <section class="page" id="page3">
-    <div class="card">
-      <div class="heart-mark" style="animation-duration:1s;">🎉</div>
-      <h1>You just made me the happiest person alive.</h1>
-      <p class="sub">Here's to us, and to every ordinary day that's about to feel a little more extraordinary.</p>
-      <div class="signature">— yours, always</div>
-    </div>
-  </section>
+        <div id="nudge"></div>
+        <div id="choice-row">
+          <button class="btn btn-primary" id="yesBtn" onclick="sayYes()">Yes</button>
+          <button class="btn btn-ghost" id="noBtn" onclick="sayNo()">No</button>
+        </div>
 
-</div>
+      </div>
+    </section>
 
-<div id="burst-field"></div>
+    <!-- PAGE 3 : CELEBRATION -->
+    <section class="page" id="page3">
+      <div class="card">
+        <div class="heart-mark" style="animation-duration:1s;">🎉</div>
+        <h1>You just made me the happiest person alive.</h1>
 
-<script>
-  // ---------- Ambient floating hearts ----------
-  const heartField = document.getElementById('heart-field');
-  const heartChars = ['❤','💗','💕','💞'];
+        <!-- GIF -->
+        <div style="display: flex; justify-content: center; align-items: center;">
 
-  function spawnHeart() {
-    const el = document.createElement('span');
-    el.className = 'floating-heart';
-    el.textContent = heartChars[Math.floor(Math.random() * heartChars.length)];
-    const size = 14 + Math.random() * 22;
-    el.style.left = Math.random() * 100 + 'vw';
-    el.style.fontSize = size + 'px';
-    el.style.setProperty('--drift', (Math.random() * 80 - 40) + 'px');
-    const duration = 9 + Math.random() * 8;
-    el.style.animationDuration = duration + 's';
-    heartField.appendChild(el);
-    setTimeout(() => el.remove(), duration * 1000 + 500);
-  }
+          <img src="./assets//milk-and-mocha-cute.gif" alt="gif" style="border: 1px solid grey"/>
+        </div>
 
-  for (let i = 0; i < 10; i++) setTimeout(spawnHeart, i * 400);
-  setInterval(spawnHeart, 900);
+        <p class="sub">Here's to us, and to every ordinary day that's about to feel a little more extraordinary.</p>
+        <div class="signature">— yours, always</div>
+      </div>
+    </section>
 
-  // ---------- Page navigation ----------
-  function showPage(id) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-  }
+  </div>
 
-  function goToPage2() { showPage('page2'); }
+  <div id="burst-field"></div>
 
-  // ---------- "No" logic: Yes grows, No dodges ----------
-  const yesBtn = document.getElementById('yesBtn');
-  const noBtn = document.getElementById('noBtn');
-  const nudge = document.getElementById('nudge');
-  const choiceRow = document.getElementById('choice-row');
-
-  const nudgeLines = [
-    "hmm, are you sure about that?",
-    "let's think about this a little more...",
-    "the Yes button is getting excited 👀",
-    "one more try?",
-    "it's getting harder to say no, isn't it?",
-    "the button believes in you",
-    "okay but what if you said yes instead?",
-    "so close..."
-  ];
-
-  let noClicks = 0;
-  const maxScale = 3.2;
-
-  function sayNo() {
-    noClicks++;
-
-    const scale = Math.min(1 + noClicks * 0.35, maxScale);
-    yesBtn.style.transform = `scale(${scale})`;
-    yesBtn.style.boxShadow = `0 ${10 + noClicks * 3}px ${26 + noClicks * 4}px var(--shadow)`;
-
-    nudge.textContent = nudgeLines[Math.min(noClicks - 1, nudgeLines.length - 1)];
-
-    // after a few refusals, the No button starts to get shy and wander off
-    if (noClicks >= 3) {
-      const rowRect = choiceRow.getBoundingClientRect();
-      const maxX = Math.max(rowRect.width - 100, 40);
-      const maxY = 60;
-      const randX = (Math.random() * maxX - maxX / 2);
-      const randY = (Math.random() * maxY - maxY / 2);
-      noBtn.style.position = 'relative';
-      noBtn.style.left = randX + 'px';
-      noBtn.style.top = randY + 'px';
-      noBtn.style.opacity = Math.max(1 - (noClicks - 3) * 0.12, 0.35);
-    }
-
-    if (noClicks >= 8) {
-      noBtn.textContent = "okay fine, I give up";
-    }
-  }
-
-  // ---------- Yes: celebrate ----------
-  function sayYes() {
-    burst();
-    setTimeout(() => showPage('page3'), 350);
-  }
-
-  function burst() {
-    const field = document.getElementById('burst-field');
-    const chars = ['❤','💗','💕','✨','💖'];
-    for (let i = 0; i < 36; i++) {
-      const el = document.createElement('span');
-      el.className = 'burst-heart';
-      el.textContent = chars[Math.floor(Math.random() * chars.length)];
-      const angle = Math.random() * Math.PI * 2;
-      const dist = 120 + Math.random() * 260;
-      el.style.setProperty('--bx', Math.cos(angle) * dist + 'px');
-      el.style.setProperty('--by', Math.sin(angle) * dist + 'px');
-      el.style.setProperty('--br', (Math.random() * 360) + 'deg');
-      el.style.animationDelay = (Math.random() * 0.15) + 's';
-      field.appendChild(el);
-      setTimeout(() => el.remove(), 1800);
-    }
-  }
-</script>
+  <script src="./script.js"></script>
 
 </body>
-  </html>
+
+</html>
